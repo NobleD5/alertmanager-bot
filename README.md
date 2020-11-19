@@ -5,7 +5,7 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/metalmatze/alertmanager-bot)](https://goreportcard.com/report/github.com/metalmatze/alertmanager-bot)
 
 
-This is the [Alertmanager](https://prometheus.io/docs/alerting/alertmanager/) bot for 
+This is the [Alertmanager](https://prometheus.io/docs/alerting/alertmanager/) bot for
 [Prometheus](https://prometheus.io/) that notifies you on alerts.  
 Just configure the Alertmanager to send Webhooks to the bot and that's it.
 
@@ -43,7 +43,7 @@ Right now it supports [Telegram](https://telegram.org/), but I'd like to [add mo
 > **NodeDown** (Node scraper.krautreporter:8080 down)  
 > scraper.krautreporter:8080 has been down for more than 1 minute.  
 > **Started**: 1 week 2 days 3 hours 50 minutes 42 seconds ago  
-> 
+>
 > 🔥 **FIRING** 🔥
 > **monitored_service_down** (MONITORED SERVICE DOWN)
 > The monitoring service 'digitalocean-exporter' is down.
@@ -55,7 +55,7 @@ Right now it supports [Telegram](https://telegram.org/), but I'd like to [add mo
 >  `job="ranch-eye" monitor="exporter-metrics" severity="page"`  
 > **Started**: 1 month 1 week 5 days 8 hours 27 minutes 57 seconds ago  
 > **Ends**: -11 months 2 weeks 2 days 19 hours 15 minutes 24 seconds  
-> 
+>
 > RancherServiceState 🔕  
 >  `job="rancher" monitor="exporter-metrics" name="scraper" rancherURL="http://rancher.example.com/v1" severity="page" state="inactive"`  
 > **Started**: 1 week 2 days 3 hours 46 minutes 21 seconds ago  
@@ -73,7 +73,7 @@ Right now it supports [Telegram](https://telegram.org/), but I'd like to [add mo
 > Version: 0.5.1  
 > Uptime: 3 weeks 1 day 6 hours 15 minutes 2 seconds  
 > **AlertManager Bot**  
-> Version: 0.4.0  
+> Version: 0.4.2  
 > Uptime: 3 weeks 1 hour 17 minutes 19 seconds  
 
 ###### /help
@@ -93,7 +93,7 @@ Right now it supports [Telegram](https://telegram.org/), but I'd like to [add mo
 
 ### Docker
 
-`docker pull metalmatze/alertmanager-bot:0.4.0`
+`docker pull metalmatze/alertmanager-bot:0.4.2`
 
 Start as a command:
 
@@ -106,9 +106,9 @@ docker run -d \
 	-e 'STORE=bolt' \
 	-e 'TELEGRAM_ADMIN=1234567' \
 	-e 'TELEGRAM_TOKEN=XXX' \
-	-v '/srv/monitoring/alertmanager-bot:/data'
+	-v '/srv/monitoring/alertmanager-bot:/data' \
 	--name alertmanager-bot \
-	alertmanager-bot:0.4.0
+	metalmatze/alertmanager-bot:0.4.2
 ```
 
 #### Consul Storage
@@ -121,23 +121,142 @@ docker run -d \
 	-e 'TELEGRAM_ADMIN=1234567' \
 	-e 'TELEGRAM_TOKEN=XXX' \
 	--name alertmanager-bot \
-	alertmanager-bot:0.4.0
+	metalmatze/alertmanager-bot:0.4.2
 ```
 
-Usage within docker-compose:
+### docker-compose:
 
-```yml
-alertmanager-bot:
-  image: metalmatze/alertmanager-bot:0.4.0
-  environment:
-    ALERTMANAGER_URL: http://alertmanager:9093
-    BOLT_PATH: /data/bot.db
-    STORE: bolt
-    TELEGRAM_ADMIN: '1234567'
-    TELEGRAM_TOKEN: XXX
-    TEMPLATE_PATHS: /templates/default.tmpl
-  volumes:
-  - /srv/monitoring/alertmanager-bot:/data
+[embedmd]:# (deployments/examples/docker-compose.yaml)
+```yaml
+networks:
+  alertmanager-bot: {}
+services:
+  alertmanager-bot:
+    command:
+    - --alertmanager.url=http://localhost:9093
+    - --log.level=info
+    - --store=bolt
+    - --bolt.path=/data/bot.db
+    environment:
+      TELEGRAM_ADMIN: "1234"
+      TELEGRAM_TOKEN: XXXXXXX
+    image: metalmatze/alertmanager-bot:0.4.2
+    networks:
+    - alertmanager-bot
+    ports:
+    - 8080:8080
+    restart: always
+    volumes:
+    - ./data:/data
+version: "3"
+```
+
+### Kubernetes:
+
+[embedmd]:# (deployments/examples/kubernetes.yaml)
+```yaml
+apiVersion: v1
+items:
+- apiVersion: v1
+  data:
+    admin: MTIzNA==
+    token: WFhYWFhYWA==
+  kind: Secret
+  metadata:
+    labels:
+      app.kubernetes.io/name: alertmanager-bot
+    name: alertmanager-bot
+    namespace: monitoring
+  type: Opaque
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app.kubernetes.io/name: alertmanager-bot
+    name: alertmanager-bot
+    namespace: monitoring
+  spec:
+    ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+    selector:
+      app.kubernetes.io/name: alertmanager-bot
+- apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    labels:
+      app.kubernetes.io/name: alertmanager-bot
+    name: alertmanager-bot
+    namespace: monitoring
+  spec:
+    podManagementPolicy: OrderedReady
+    replicas: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/name: alertmanager-bot
+    serviceName: alertmanager-bot
+    template:
+      metadata:
+        labels:
+          app.kubernetes.io/name: alertmanager-bot
+        name: alertmanager-bot
+        namespace: monitoring
+      spec:
+        containers:
+        - args:
+          - --alertmanager.url=http://localhost:9093
+          - --log.level=info
+          - --store=bolt
+          - --bolt.path=/data/bot.db
+          env:
+          - name: TELEGRAM_ADMIN
+            valueFrom:
+              secretKeyRef:
+                key: admin
+                name: alertmanager-bot
+          - name: TELEGRAM_TOKEN
+            valueFrom:
+              secretKeyRef:
+                key: token
+                name: alertmanager-bot
+          image: metalmatze/alertmanager-bot:0.4.2
+          imagePullPolicy: IfNotPresent
+          name: alertmanager-bot
+          ports:
+          - containerPort: 8080
+            name: http
+          resources:
+            limits:
+              cpu: 100m
+              memory: 128Mi
+            requests:
+              cpu: 25m
+              memory: 64Mi
+          volumeMounts:
+          - mountPath: /data
+            name: data
+        restartPolicy: Always
+        volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: data
+    volumeClaimTemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        labels:
+          app.kubernetes.io/name: alertmanager-bot
+        name: alertmanager-bot
+        namespace: monitoring
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+        storageClassName: standard
+kind: List
 ```
 
 ### Ansible
@@ -157,7 +276,7 @@ ENV Variable | Description
 | CONSUL_URL        | The URL to use to connect with Consul, default: `localhost:8500` |
 | LISTEN_ADDR       | Address that the bot listens for webhooks, default: `0.0.0.0:8080` |
 | STORE             | The type of the store to use, choose from bolt (local) or consul (distributed) |
-| TELEGRAM_ADMIN    | The Telegram user id for the admin. The bot will only reply to messages sent from an admin. All other messages are dropped and logged on the bot's console. |
+| TELEGRAM_ADMIN    | The Telegram user id for the admin. The bot will only reply to messages sent from an admin. All other messages are dropped and logged on the bot's console.<br> Your user id you can get from [@userinfobot](https://t.me/userinfobot). |
 | TELEGRAM_TOKEN    | Token you get from [@botfather](https://telegram.me/botfather) |
 | TEMPLATE_PATHS    | Path to custom message templates, default template is `./default.tmpl`, in docker - `/templates/default.tmpl` |
 
@@ -171,7 +290,7 @@ variable.
 - TELEGRAM_ADMIN="**********\n************"
 --telegram.admin=1 --telegram.admin=2
 ```
-#### Alertmanager Configuration 
+#### Alertmanager Configuration
 
 Now you need to connect the Alertmanager to send alerts to the bot.  
 A webhook is used for that, so make sure your `LISTEN_ADDR` is reachable for the Alertmanager.

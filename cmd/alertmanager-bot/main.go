@@ -71,21 +71,23 @@ func main() {
 	a.HelpFlag.Short('h')
 
 	a.Flag("alertmanager.url", "The URL that's used to connect to the alertmanager").
-		Required().
 		Envar("ALERTMANAGER_URL").
+		Default("http://localhost:9093/").
 		URLVar(&config.alertmanager)
 
 	a.Flag("bolt.path", "The path to the file where bolt persists its data").
 		Envar("BOLT_PATH").
+		Default("/tmp/bot.db").
 		StringVar(&config.boltPath)
 
 	a.Flag("consul.url", "The URL that's used to connect to the consul store").
 		Envar("CONSUL_URL").
+		Default("localhost:8500").
 		URLVar(&config.consul)
 
 	a.Flag("listen.addr", "The address the alertmanager-bot listens on for incoming webhooks").
-		Required().
 		Envar("LISTEN_ADDR").
+		Default("0.0.0.0:8080").
 		StringVar(&config.listenAddr)
 
 	a.Flag("log.json", "Tell the application to log json and not key value pairs").
@@ -114,7 +116,7 @@ func main() {
 
 	a.Flag("template.paths", "The paths to the template").
 		Envar("TEMPLATE_PATHS").
-		Default("./default.tmpl").
+		Default("/templates/default.tmpl").
 		ExistingFilesVar(&config.templatesPaths)
 
 	_, err := a.Parse(os.Args[1:])
