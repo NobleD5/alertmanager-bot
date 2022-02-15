@@ -25,7 +25,7 @@ jobs:
           BOT_CHAT: ${{ secrets.ENV_BOT_CHAT }}
         run: |
           mkdir -p ./pkg/testdata/emptydir
-          go test -race -covermode=atomic -coverprofile=coverage.txt ./... -args -ENV_BOT_TOKEN="$BOT_TOKEN" -ENV_BOT_CHAT="$bot_chat"
+          go test -race -covermode=atomic -coverprofile=coverage.txt ./... -args -ENV_BOT_TOKEN=$BOT_TOKEN -ENV_BOT_CHAT=$BOT_CHAT
 
       - name: Upload coverage to Codecov
         run:
