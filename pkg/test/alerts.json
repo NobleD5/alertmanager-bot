@@ -1,0 +1,51 @@
+{
+  "status":"success",
+  "data":[
+    {
+      "labels":{
+        "alertname":"Alertname_1",
+        "device_num":"2",
+        "environment":"monitoring",
+        "instance":"172.20.22.100",
+        "responsibility_area":"power engineer",
+        "severity":"major"
+      },
+      "annotations":{
+        "description":"description_1",
+        "summary":"summary_1"
+      },
+      "startsAt":"2021-06-25T09:42:45.484Z",
+      "endsAt":"2021-06-25T10:13:20.484Z",
+      "generatorURL":"http://prometheus:9090/graph",
+      "status":{
+        "state":"suppressed",
+        "silencedBy":["d4e38f38-9181-4f5f-b4dd-328bae05698f"],
+        "inhibitedBy":null
+      },
+      "receivers":["Team Foo","Team Bar"],
+      "fingerprint":"013d8ecf8300166b"
+    },
+    {
+      "labels":{
+        "alertname":"Alertname_2",
+        "environment":"monitoring",
+        "instance":"192.168.10.10",
+        "severity":"major"
+      },
+      "annotations":{
+        "description":"description_2",
+        "summary":"summary_2"
+      },
+      "startsAt":"2021-06-25T09:48:07.962Z",
+      "endsAt":"2021-06-25T10:12:42.962Z",
+      "generatorURL":"http://prometheus:9090/graph",
+      "status":{
+        "state":"active",
+        "silencedBy":null,
+        "inhibitedBy":null
+      },
+      "receivers":["Team Foo","Team Bar"],
+      "fingerprint":"f4a85cd672a87693"
+    }
+  ]
+}

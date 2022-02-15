@@ -8,9 +8,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/NobleD5/alertmanager-bot/pkg/vendor"
+
 	"github.com/go-kit/kit/log"
 	"github.com/pkg/errors"
-	"github.com/prometheus/alertmanager/notify"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/stretchr/testify/assert"
 )
@@ -20,7 +21,7 @@ const validWebhook = `{"receiver":"telegram","status":"firing","alerts":[{"statu
 func TestHandleWebhook(t *testing.T) {
 	logger := log.NewNopLogger()
 	counter := prometheus.NewCounter(prometheus.CounterOpts{})
-	webhooks := make(chan notify.WebhookMessage, 1)
+	webhooks := make(chan vendor.Message, 1)
 
 	h := HandleWebhook(logger, counter, webhooks)
 
@@ -83,7 +84,7 @@ func TestHandleWebhook(t *testing.T) {
 				checkStatusCode(http.StatusOK),
 
 				func(resp *http.Response) error {
-					var expected notify.WebhookMessage
+					var expected vendor.Message
 					if err := json.Unmarshal([]byte(validWebhook), &expected); err != nil {
 						return err
 					}

@@ -1,0 +1,25 @@
+{"status":"success","data":[
+  {
+    "id":"acf620d5-0239-4f7b-ab83-249b4da88d43",
+    "matchers":[
+      {"name":"alertname","value":"alertname_1","isRegex":false,"isEqual":true},
+      {"name":"environment","value":"monitoring","isRegex":false,"isEqual":true}
+    ],
+    "startsAt":"2021-06-21T11:40:06.832322058Z",
+    "endsAt":"2021-06-21T13:40:06.828753892Z",
+    "updatedAt":"2021-06-21T11:40:06.832322058Z",
+    "createdBy":"alertmanager-bot",
+    "comment":"Enacted by administrator command",
+    "status":{"state":"active"}},
+  {"id":"b6b40af1-0570-44ff-a65c-ea4b47499adc",
+    "matchers":[
+      {"name":"alertname","value":"alertname_2","isRegex":false,"isEqual":true},
+      {"name":"environment","value":"monitoring","isRegex":false,"isEqual":true}
+    ],
+    "startsAt":"2021-06-21T11:40:06.832322058Z",
+    "endsAt":"2021-06-21T13:40:06.828753892Z",
+    "updatedAt":"2021-06-21T11:40:06.832322058Z",
+    "createdBy":"alertmanager-bot",
+    "comment":"Enacted by administrator command",
+    "status":{"state":"active"}}
+]}

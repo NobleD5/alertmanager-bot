@@ -8,26 +8,28 @@ import (
 	"strings"
 	"time"
 
+	"github.com/NobleD5/alertmanager-bot/pkg/vendor"
+
 	"github.com/go-kit/kit/log"
+	"github.com/go-kit/kit/log/level"
 	"github.com/hako/durafmt"
-	"github.com/prometheus/alertmanager/types"
 )
 
-type silencesResponse struct {
-	Data   []types.Silence `json:"data"`
-	Status string          `json:"status"`
-}
-
 // ListSilences returns a slice of Silence and an error.
-func ListSilences(logger log.Logger, alertmanagerURL string) ([]types.Silence, error) {
-	resp, err := httpRetry(logger, http.MethodGet, alertmanagerURL+"/api/v1/silences")
+func ListSilences(logger log.Logger, alertmanagerURL string) ([]vendor.Silence, error) {
+
+	apiEndpoint := string("/api/v1/silences")
+	getURL := alertmanagerURL + apiEndpoint
+	level.Debug(logger).Log("msg", "assembled URL for GETing silences request", "url", getURL)
+
+	response, err := httpRetry(logger, http.MethodGet, getURL)
 	if err != nil {
-		return nil, err
+		return nil, level.Error(logger).Log("msg", "error while GET silences from alertmanager", "err", err)
 	}
 
-	var silencesResponse silencesResponse
-	dec := json.NewDecoder(resp.Body)
-	defer resp.Body.Close()
+	var silencesResponse vendor.SilencesResponse
+	dec := json.NewDecoder(response.Body)
+	defer response.Body.Close()
 	if err := dec.Decode(&silencesResponse); err != nil {
 		return nil, err
 	}
@@ -40,15 +42,16 @@ func ListSilences(logger log.Logger, alertmanagerURL string) ([]types.Silence, e
 	return silences, err
 }
 
-// SilenceMessage converts a silences to a message string
-func SilenceMessage(s types.Silence) string {
-	var alertname, emoji, matchers, duration string
+// SilenceMessage converts a silences to a message string.
+func SilenceMessage(s vendor.Silence) string {
+
+	var alertname, emoji, matchers, duration string = "Empty alertname", "", "", ""
 
 	for _, m := range s.Matchers {
 		if m.Name == "alertname" {
 			alertname = m.Value
 		} else {
-			matchers = matchers + fmt.Sprintf(` %s="%s"`, m.Name, m.Value)
+			matchers = matchers + fmt.Sprintf(`%s="%s", `, m.Name, m.Value)
 		}
 	}
 
@@ -69,17 +72,56 @@ func SilenceMessage(s types.Silence) string {
 	}
 
 	return fmt.Sprintf(
-		"%s%s\n```%s```\n%s\n",
+		"*%s*%s\n```%s```\n%s\n",
 		alertname, emoji,
 		strings.TrimSpace(matchers),
 		duration,
 	)
 }
 
-// Resolved returns if a silence is resolved by EndsAt
-func Resolved(s types.Silence) bool {
+// Resolved returns if a silence is resolved by EndsAt.
+func Resolved(s vendor.Silence) bool {
 	if s.EndsAt.IsZero() {
 		return false
 	}
 	return !s.EndsAt.After(time.Now())
+}
+
+// PostSilence used for POSTing valid silence JSON on alertmanager API endpoint.
+func PostSilence(logger log.Logger, alertmanagerURL string, silence vendor.Silence) error {
+
+	apiEndpoint := string("/api/v2/silences")
+	postURL := alertmanagerURL + apiEndpoint
+	level.Debug(logger).Log("msg", "assembled URL for POSTing silence request", "url", postURL)
+
+	payLoad, err := json.Marshal(silence)
+	if err != nil {
+		return level.Error(logger).Log("msg", "marshalling silence to JSON", "err", err)
+	}
+
+	level.Debug(logger).Log("msg", "testing created silence", "silence", string(payLoad))
+
+	response, err := request(logger, http.MethodPost, http.StatusOK, postURL, payLoad)
+	if err != nil {
+		return level.Error(logger).Log("msg", "error while POST silence to alertmanager", "err", err)
+	}
+	defer response.Body.Close()
+
+	return nil
+}
+
+// DeleteSuperSilence used for DELETing supersilence from */sm*-command on alertmanager API endpoint.
+func DeleteSuperSilence(logger log.Logger, alertmanagerURL string, silenceID string) error {
+
+	apiEndpoint := string("/api/v2/silence/")
+	postURL := alertmanagerURL + apiEndpoint + silenceID
+	level.Debug(logger).Log("msg", "assembled URL for DELETing supersilence request", "url", postURL)
+
+	response, err := request(logger, http.MethodDelete, http.StatusOK, postURL, []byte{})
+	if err != nil {
+		return level.Error(logger).Log("msg", "error while DELETE supersilence from alertmanager", "err", err)
+	}
+	defer response.Body.Close()
+
+	return nil
 }

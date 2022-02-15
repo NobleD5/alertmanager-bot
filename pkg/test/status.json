@@ -1,0 +1,14 @@
+{"status":"success",
+  "data":
+    {
+    "configJSON":
+      {
+        "global":{"resolve_timeout":"5m","http_config":{"BasicAuth":null,"Authorization":null,"OAuth2":null,"BearerToken":"","BearerTokenFile":"","ProxyURL":{},"TLSConfig":{"CAFile":"","CertFile":"","KeyFile":"","ServerName":"","InsecureSkipVerify":false},"FollowRedirects":true}},
+        "route":{"receiver":"User","group_by":["severity","critical"],"group_wait":"5s","group_interval":"2m","repeat_interval":"3h"},
+        "inhibit_rules":[{"source_match":{"severity":"critical"},"target_match_re":{"severity":"warning|major"},"equal":["alertname"]}],
+        "templates":["/alertmanager/template.tmpl"]
+      },
+    "versionInfo":{"branch":"HEAD","buildDate":"20210602-07:50:37","buildUser":"root@b595c7f32520","goVersion":"go1.16.4","revision":"44f8adc06af5101ad64bd8b9c8b18273f2922051","version":"0.22.2"},
+    "uptime":"2021-06-16T10:47:01.375839909Z"
+    }
+}

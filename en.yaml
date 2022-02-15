@@ -1,0 +1,75 @@
+responseHelp: |
+  I'm a *Prometheus AlertManager Bot* for Telegram. I will notify you about alerts.
+  You can also ask me about my /status, /alerts & /silences.
+  Available commands:
+  %s - Subscribe for alerts.
+  %s - Unsubscribe for alerts.
+  %s - Print the current status.
+  %s - List all alerts.
+  %s - List all silences.
+  %s - Interactive command for creating silence for alert.
+  %s - Fast command for creating silence with 2 hours duration.
+  %s - Fast command for creating silence with 48 hours duration.
+  %s - Fast command for creating silence with 2 weeks duration.
+  %s - Dynamic command for creating/deleting maintenance supersilence with set duration (or 8 hours otherwise).
+  %s - List all users and group chats that subscribed.
+responseStart: |
+  Hey, %s! I will now keep you up to date!
+  %s
+responseStartFail: |
+  I can't add this chat to the subscribers list.
+responseStop: |
+  Alright, %s! I won't talk to you again.
+  %s
+responseStopFail: |
+  I can't remove this chat from the subscribers list.
+responseChats: |
+  Currently these chat have subscribed:
+  %s
+responseChatsFail: |
+  I can't list the subscribed chats.
+responseStatus: |
+  *AlertManager*
+  Version: %s
+  Uptime: %s
+  *AlertManager Bot*
+  Version: %s
+  Uptime: %s
+responseStatusFail: |
+  Failed to get status...
+  %v
+responseNoAlerts: |
+  No alerts right now! 🎉
+responseAlertsFail: |
+  Failed to list alerts...
+  %v
+responseNoSilences: |
+  No silences right now.
+responseSilencesFail: |
+  Failed to list silences...
+  %v
+responseSilenceCreated: |
+  Silence created 🔇
+responseSilenceAllCreated: |
+  Maintenance silence created 🔇
+  ❗️❗️❗️
+  Please note that *ALL* alarms will be silenced for the selected period of %s hour(s).
+responseSilenceFail: |
+  ❌ Failed to create silence...
+  %v
+responseNoFingerprint: |
+  Fingerprint absent!
+  Please provide a valid fingerprint of the alert message.
+responseFingerprintFound: |
+  Found alert match: %s %s (%s)
+responseNoFingerprintFound: |
+  No match for fingerprint found ⛔️
+responseAdmins: |
+  Here is my current administrators list:
+  %s
+responseNonAdmin: |
+  Sorry, %s (%s %s). You are not in my administrators list... 😔
+responseIncomprehensible: |
+  Sorry, I don't understand...
+responseInDev: |
+  This feature in development, meatbag %v
