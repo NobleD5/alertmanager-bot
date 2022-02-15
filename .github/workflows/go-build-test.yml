@@ -20,7 +20,7 @@ jobs:
         run: go build -v ./...
 
       - name: Test
-        with:
+        env:
           bot_token: ${{ secrets.ENV_BOT_TOKEN }}
           bot_chat: ${{ secrets.ENV_BOT_CHAT }}
         run: |
