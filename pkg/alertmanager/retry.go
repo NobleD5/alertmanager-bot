@@ -90,7 +90,7 @@ func request(logger log.Logger, method string, code int, url string, payLoad []b
 
 	// Client creating
 	transport := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		TLSClientConfig: &tls.Config{},
 	}
 	client := &http.Client{Transport: transport}
 
