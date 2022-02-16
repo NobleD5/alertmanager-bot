@@ -21,12 +21,11 @@ jobs:
 
       - name: Test
         env:
-          ENV_BOT_TOKEN: ${{ secrets.ENV_BOT_TOKEN }}
-          ENV_BOT_CHAT: ${{ secrets.ENV_BOT_CHAT }}
+          TEST_VARS: ${{ secrets.TEST_VARS }}
         run: |
           mkdir -p ./pkg/testdata/emptydir
-          echo ${{ env.ENV_BOT_CHAT }}
-          go test -race -covermode=atomic -coverprofile=coverage.txt ./... -args -ENV_BOT_TOKEN=${{ env.ENV_BOT_TOKEN }} -ENV_BOT_CHAT=${{ env.ENV_BOT_CHAT }}
+          go get github.com/joho/godotenv/cmd/godotenv
+          godotenv -f ${{ env.TEST_VARS }} go test -race -covermode=atomic -coverprofile=coverage.txt ./...
 
       - name: Upload coverage to Codecov
         run:
