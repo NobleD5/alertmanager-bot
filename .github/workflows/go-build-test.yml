@@ -21,12 +21,10 @@ jobs:
 
       - name: Test
         env:
-          bot_token: ${{ secrets.ENV_BOT_TOKEN }}
-          bot_chat: ${{ secrets.ENV_BOT_CHAT }}
+          ENV_BOT_TOKEN: ${{ secrets.ENV_BOT_TOKEN }}
+          ENV_BOT_CHAT: ${{ secrets.ENV_BOT_CHAT }}
         run: |
           mkdir -p ./pkg/testdata/emptydir
-          export ENV_BOT_TOKEN=${{ env.bot_token }}
-          export ENV_BOT_CHAT=${{ env.bot_chat }}
           go test -race -covermode=atomic -coverprofile=coverage.txt ./...
 
       - name: Upload coverage to Codecov
