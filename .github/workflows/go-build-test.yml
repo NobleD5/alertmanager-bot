@@ -20,7 +20,10 @@ jobs:
         run: go build -v ./...
 
       - name: Test
-        env:
+        # env:
+        #   ENV_BOT_TOKEN: ${{ secrets.ENV_BOT_TOKEN }}
+        #   ENV_BOT_CHAT: ${{ secrets.ENV_BOT_CHAT }}
+        with:
           ENV_BOT_TOKEN: ${{ secrets.ENV_BOT_TOKEN }}
           ENV_BOT_CHAT: ${{ secrets.ENV_BOT_CHAT }}
         run: |
