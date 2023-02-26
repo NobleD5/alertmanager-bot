@@ -12,8 +12,8 @@ require (
 	github.com/joho/godotenv v1.4.0
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/alertmanager v0.21.1-0.20210129135951-f2f7a72813af
-	github.com/prometheus/client_golang v1.9.0
-	github.com/prometheus/common v0.15.0
+	github.com/prometheus/client_golang v1.11.1
+	github.com/prometheus/common v0.26.0
 	github.com/stretchr/testify v1.7.0
 	golang.org/x/text v0.3.8
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6
