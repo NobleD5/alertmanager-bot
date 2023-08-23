@@ -11,11 +11,11 @@ require (
 	github.com/hako/durafmt v0.0.0-20200710122514-c0fb7b4da026
 	github.com/joho/godotenv v1.4.0
 	github.com/pkg/errors v0.9.1
-	github.com/prometheus/alertmanager v0.21.1-0.20210129135951-f2f7a72813af
-	github.com/prometheus/client_golang v1.11.1
-	github.com/prometheus/common v0.26.0
-	github.com/stretchr/testify v1.7.0
-	golang.org/x/text v0.3.8
+	github.com/prometheus/alertmanager v0.26.0-rc.0
+	github.com/prometheus/client_golang v1.15.1
+	github.com/prometheus/common v0.44.0
+	github.com/stretchr/testify v1.8.4
+	golang.org/x/text v0.9.0
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6
 	gopkg.in/tucnak/telebot.v2 v2.3.5
 	gopkg.in/yaml.v2 v2.4.0
